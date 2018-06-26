@@ -1,19 +1,18 @@
-const firebase = require("firebase")
-var userRef = db.collection('users')
+const firebase = require('firebase')
+const userRef = firebase.collection('users')
 
 firebase.initializeApp({
-  apiKey: "AIzaSyCWJOdnyasNUL7xAWi83WDHihsKj92N7R8",
-  authDomain: "notification-7e499.firebaseapp.com",
-  databaseURL: "https://notification-7e499.firebaseio.com",
-  projectId: "notification-7e499",
-  storageBucket: "notification-7e499.appspot.com",
-  messagingSenderId: "400202276323"
-});
-  
+  apiKey: 'AIzaSyCWJOdnyasNUL7xAWi83WDHihsKj92N7R8',
+  authDomain: 'notification-7e499.firebaseapp.com',
+  databaseURL: 'https://notification-7e499.firebaseio.com',
+  projectId: 'notification-7e499',
+  storageBucket: 'notification-7e499.appspot.com',
+  messagingSenderId: '400202276323'
+})
+
 // Initialize Cloud Firestore through Firebase
-var db = firebase.firestore()
-const firestore = firebase.firestore()
-const settings = { 
+const db = firebase.firestore()
+const settings = {
   timestampsInSnapshots: true
 }
 db.settings(settings)
@@ -24,7 +23,7 @@ function getUserByStoreId (storeId) {
       userRef.doc(storeId).get()
         .then(doc => {
           if (!doc.exists) {
-            console.log('No such document!');
+            console.log('No such document!')
           } else {
             console.log('Document data:', doc.data())
             return doc.data().playerId
@@ -33,23 +32,26 @@ function getUserByStoreId (storeId) {
         .catch(err => {
           console.log('Error getting document', err)
         })
-      )
-    })
+    )
+  })
 }
 
 function getAllowUser () {
+  var isFirst = true
+  var storeStr = ''
+
   return new Promise((resolve, reject) => {
     resolve(
-      unfinishedUser.get()
+      userRef.where('status', '==', 'allow').get()
         .then((snapshot) => {
           snapshot.forEach((collections) => {
-            if(isFirst) {
+            if (isFirst) {
               storeStr += collections.data().storeId
               isFirst = false
             } else {
-              storeStr += "," + collections.data().storeId
+              storeStr += ',' + collections.data().storeId
             }
-          });
+          })
           console.log(storeStr)
           return storeStr
         })
@@ -61,11 +63,11 @@ function getAllowUser () {
 }
 
 function update (storeId, data) {
-  //data = { key: 'value' }
   userRef
     .doc(storeId)
     .update(data)
 }
+
 function create (storeId, data) {
   userRef
     .doc(storeId)
