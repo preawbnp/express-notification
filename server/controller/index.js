@@ -1,5 +1,7 @@
 function register () {
-    
+    init()
+    updateUserFirestore()
+    subscribe() 
 }
 
 function cornWebPush() {
