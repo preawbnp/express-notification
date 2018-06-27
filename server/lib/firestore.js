@@ -1,5 +1,4 @@
 const firebase = require('firebase')
-const userRef = firebase.collection('users')
 
 firebase.initializeApp({
   apiKey: 'AIzaSyCWJOdnyasNUL7xAWi83WDHihsKj92N7R8',
@@ -16,6 +15,7 @@ const settings = {
   timestampsInSnapshots: true
 }
 db.settings(settings)
+const userRef = db.collection('users')
 
 function getUserByStoreId (storeId) {
   return new Promise((resolve, reject) => {
@@ -62,14 +62,15 @@ function getAllowUser () {
   })
 }
 
-function update (storeId, data) {
-  userRef
-    .doc(storeId)
-    .update(data)
-}
-
-function create (storeId, data) {
-  userRef
-    .doc(storeId)
-    .set(data)
+module.exports = {
+  update: function (storeId, data) {
+    userRef
+      .doc(storeId)
+      .update(data)
+  },
+  create: function (storeId, data) {
+    userRef
+      .doc(storeId)
+      .set(data)
+  }
 }

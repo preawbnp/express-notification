@@ -3,35 +3,41 @@ const sellsuki = require('../lib/sellsuki')
 const onesignal = require('../lib/onesignal')
 
 async function pushNotification (users) {
+  // console.log('[cornWebPush function]')
+  // var strStore = await services.getAllowUser()
+  // var users = await sellsuki.getSellsukiData('1')
+  // console.log(users.data.results[0])
+  // return users.data.results[0]
+
   users.data.results.forEach((user) => {
     var stage = ''
-    var playerId = await firestore.getUserByStoreId().data().playerId
-    var language = await onesignal.getLanguage(playerId)
     var message
 
-    if (user.count_product <= 1){
+    if (user.count_product <= 1) {
       stage = '1'
     } else if (user.count_product > 1 && user.count_store_payment_channel === 0) {
       stage = '2'
     } else if (user.count_store_payment_channel > 0 && user.count_store_shipping_type <= 1) {
       stage = '3'
     } else {
-      userRef.doc(user.store_id).update({
+      firestore.update(user.store_id, {
         status: 'done'
       })
       return
     }
-    message = createMessage(stage, playerId, language)
+    message = createMessage(stage, user.store_id)
     onesignal.sendNotification(message)
   })
 }
 
-async function createMessage(stage, playerId, language) {
+async function createMessage (stage, storeId) {
   var heading = ''
   var content = ''
   var url = ''
+  var playerId = await firestore.getUserByStoreId(storeId).data().playerId
+  var language = await onesignal.getLanguage(playerId)
 
-  if(language === 'th') {
+  if (language === 'th') {
     if (stage === '1') {
       heading = 'อยากเริ่มขาย ต้องเพิ่มสินค้าก่อนนะ!'
       content = 'เริ่มการขายผ่าน Sellsuki โดยการเพิ่มสินค้าในสต๊อกสินค้า'
@@ -41,8 +47,8 @@ async function createMessage(stage, playerId, language) {
     } else if (stage === '3') {
       heading = 'อย่าลืมเพิ่มวิธีจัดส่งและค่าส่งสินค้าด้วยนะ'
       content = 'เพิ่มวิธีจัดส่งสินค้าพร้อมค่าจัดส่งแบบต่างๆ ให้ลูกค้าเลือกรับของได้ตามสะดวก'
-    } 
-  } else if(language === 'en') {
+    }
+  } else if (language === 'en') {
     if (stage === '1') {
       heading = 'Ready to sell? let’s add your products first!'
       content = 'Add products into Sellsuki inventory to run your online store.'
@@ -52,10 +58,10 @@ async function createMessage(stage, playerId, language) {
     } else if (stage === '3') {
       heading = 'Do not forget adding delivery options.'
       content = 'More delivery options, more customer satisfaction.'
-    } 
+    }
   }
- 
-  var message = { 
+
+  var message = {
     app_id: '17056444-a80b-40d4-9388-1a9a751b0f31',
     headings: { 'en': heading },
     contents: { 'en': content },
@@ -65,14 +71,13 @@ async function createMessage(stage, playerId, language) {
   return message
 }
 
-function updateUserInFirestore() {
-  //Get cookie from Sellsuki
-  var storeId = '' 
+async function updateUserInFirestore () {
+  var storeId = ''
   var playerId = await firestore.getUserByStoreId(storeId).data().playerId
-  
+
   if ((playerId === null && userId !== null)) {
     console.log('No such document!')
-    var adduser = user.doc(storeid).set({
+    var addUser = user.doc(storeid).set({
       playerId: userId,
       storeId: storeid
     }); 
@@ -93,12 +98,12 @@ function subscribe() {
   OneSignal.push(function() {
     // If we're on an unsupported browser, do nothing
     if (!OneSignal.isPushNotificationsSupported()) {
-        return
+      return
     }
     updateMangeWebPushSubscriptionButton();
     OneSignal.on("subscriptionChange", function(isSubscribed) {
-        /* If the user's subscription state changes during the page's session, update the button text */
-        updateMangeWebPushSubscriptionButton();
+      /* If the user's subscription state changes during the page's session, update the button text */
+      updateMangeWebPushSubscriptionButton();
     })
 })
 }
