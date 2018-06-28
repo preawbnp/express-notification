@@ -9,6 +9,7 @@ module.exports = {
 
     users.forEach((user) => {
       var stage = ''
+      firestore.update(user.store_id, {data: user})
       if (user.count_product <= 1) {
         stage = '1'
       } else if (user.count_product > 1 && user.count_store_payment_channel === 0) {
