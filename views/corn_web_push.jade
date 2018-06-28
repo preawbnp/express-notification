@@ -1,5 +1,14 @@
-extends layout
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(type='text/javascript' src="../server/controller/index.js")
+  body
+    h1= title
+    p Welcome to #{title}
+    hello()
 
-block content
-  h1= title
-  p Welcome to #{title}
+
+
+    
+

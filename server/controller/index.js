@@ -1,17 +1,12 @@
 var services = require('../services/index')
 
-async function register () {
-  services.init()
-  services.updateUserFirestore()
-  services.subscribe()
+module.exports = {
+  register: async function () {
+    services.init()
+    services.updateUserFirestore()
+    services.subscribe()
+  },
+  cornWebPush: function () {
+    services.pushNotification()
+  }
 }
-
-async function cornWebPush () {
-  var strStore = await services.getAllowUser()
-  var users = await services.getSellsukiData(strStore)
-
-  services.pushNotification(users)
-}
-
-register()
-cornWebPush()
