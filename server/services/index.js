@@ -62,9 +62,9 @@ module.exports = {
       contents: { 'en': content },
       include_player_ids: [ playerId ]
     }
-
+    this.updateAt(storeId)
     onesignal.sendNotification(message)
-  }
+  },
 
   // updateUserInFirestore: async function () {
   //   var storeId = ''
@@ -136,4 +136,10 @@ module.exports = {
   //       }
   //   })
   // }
+  updateAt: function (storeId) {
+    var date = new Date()
+    firestore.update(storeId, {
+      updateAt: date
+    })
+  }
 }
